@@ -14,7 +14,7 @@ with open("input") as f:
 
 # init overlaps matrix
 x_max, y_max = lines.reshape(2 * len(lines), 2).max(axis=0)
-overlaps = zeros((y_max, x_max))
+overlaps = zeros((y_max + 1, x_max + 1))
 
 # count overlaps of horizontal and vertical lines
 for [x1, y1], [x2, y2] in lines:
