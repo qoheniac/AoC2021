@@ -5,9 +5,9 @@ with open("input") as f:
         path = line.rstrip().split("-")
         for i in range(2):
             if path[i] in system:
-                system[path[i]].append(path[i-1])
+                system[path[i]].append(path[i - 1])
             else:
-                system[path[i]] = [path[i-1]]
+                system[path[i]] = [path[i - 1]]
 
 
 # function counting all paths from cave to "end" avoiding caves in visited
