@@ -11,10 +11,10 @@ with open("input") as f:
     ]
 
 # assuming y_max negative, then if v_y positive, probe will return to y=0 with
-# velocity 1-v_y so target will be missed if v_y larger 1-y_min, therefore
-# starting with v0=1-y_min, trajectory parts below y=0 are checked until a hit
+# velocity -1-v_y so target will be missed if v_y larger -1-y_min, therefore
+# starting with v0=-1-y_min, trajectory parts below y=0 are checked until a hit
 # is found, then maximum y, i.e. v0-th triangular number, is returned
-v0 = 1 - y_min
+v0 = -1 - y_min
 while v0 > 0:
     y_old = y = 0
     v = -v0
