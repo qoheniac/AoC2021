@@ -66,6 +66,6 @@ def magnitude(number):
 with open("input") as f:
     result = eval(f.readline().rstrip())
     for line in f:
-        result = [result.copy(), eval(line.rstrip())]
+        result = [result, eval(line.rstrip())]
         reduce(result)
 print(magnitude(result))
