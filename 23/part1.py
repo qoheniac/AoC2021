@@ -97,6 +97,15 @@ while True:
             lowest_energy = total_energy[configuration]
             lowest_energy_configuration = configuration
     to_visit.remove(lowest_energy_configuration)
+    print(lowest_energy, end="\r")
+
+    # quit if configuration equals desired configuration
+    for new_amphipod in lowest_energy_configuration:
+        if new_amphipod[0] != new_amphipod[1]:
+            break
+    else:
+        print(lowest_energy)
+        break
 
     # get neighbor configurations and energies to get there
     for amphipod in lowest_energy_configuration:
@@ -113,14 +122,6 @@ while True:
             )
             new_configuration_energy = lowest_energy + destination[2]
 
-            # quit if neighbor configuration equals desired configuration
-            for new_amphipod in new_configuration:
-                if new_amphipod[0] != new_amphipod[1]:
-                    break
-            else:
-                print(new_configuration_energy)
-                break
-
             # if neighbor configuration not considered yet, add it to to_visit
             if new_configuration not in total_energy:
                 to_visit.add(new_configuration)
@@ -131,11 +132,3 @@ while True:
                 or new_configuration_energy < total_energy[new_configuration]
             ):
                 total_energy[new_configuration] = new_configuration_energy
-
-        # leave while loop if desired configuration was reached
-        else:
-            continue
-        break
-    else:
-        continue
-    break
