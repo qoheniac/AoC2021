@@ -87,12 +87,15 @@ start_configuration = tuple(start_configuration)
 to_visit = {start_configuration: 0}  # configuration: total energy to get there
 
 # visit configuration with lowest total energy to get there
+lowest_energy = float("inf")
 while True:
-    lowest_energy = float("inf")
+    old_lowest_energy, lowest_energy = lowest_energy, float("inf")
     for configuration, energy in to_visit.items():
         if energy < lowest_energy:
             lowest_energy = energy
             lowest_energy_configuration = configuration
+            if energy == old_lowest_energy:
+                break
     del to_visit[lowest_energy_configuration]
     print(lowest_energy, end="\r")
 
