@@ -81,7 +81,7 @@ for room, j in forks.items():  # parse rooms
     for i in range(2):
         if (kind := burrow[2 + i][1 + j]) in ["A", "B", "C", "D"]:
             start_configuration.append((kind, room, i))
-start_configuration = tuple(start_configuration)
+start_configuration = frozenset(start_configuration)
 
 # initialization for Dijkstra-like algorithm to find lowest energy
 to_visit = {start_configuration: 0}  # configuration: total energy to get there
@@ -113,7 +113,7 @@ while True:
         for destination in moves:
 
             # construct neighbor configuration and calculate the total energy
-            new_configuration = tuple(
+            new_configuration = frozenset(
                 other
                 if other != amphipod
                 else (amphipod[0], destination[0], destination[1])
