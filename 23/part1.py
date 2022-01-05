@@ -1,5 +1,5 @@
 # situation defining parameters
-junctions = {"A": 2, "B": 4, "C": 6, "D": 8}
+forks = {"A": 2, "B": 4, "C": 6, "D": 8}
 energies = {"A": 1, "B": 10, "C": 100, "D": 1000}
 hallway_length = 11
 
@@ -10,7 +10,7 @@ def possible_moves(amphipod, configuration):
     # on hallway
     if amphipod[1] == "hallway":
         bottom_location_blocked = False
-        left, right = sorted([amphipod[2], junctions[amphipod[0]]])
+        left, right = sorted([amphipod[2], forks[amphipod[0]]])
         for other in configuration:
 
             # check if other amphipod blocks way to correct room
@@ -25,7 +25,7 @@ def possible_moves(amphipod, configuration):
                     bottom_location_blocked = True
 
         # calculate requisite energy and return destination
-        steps = abs(junctions[amphipod[0]] - amphipod[2])
+        steps = abs(forks[amphipod[0]] - amphipod[2])
         if bottom_location_blocked:
             return [(amphipod[0], 0, (steps + 1) * energies[amphipod[0]])]
         else:
@@ -48,7 +48,7 @@ def possible_moves(amphipod, configuration):
         minright = hallway_length - 1
         for other in configuration:
             if other[1] == "hallway":
-                if other[2] < junctions[amphipod[1]]:
+                if other[2] < forks[amphipod[1]]:
                     maxleft = max(maxleft, other[2] + 1)
                 else:
                     minright = min(minright, other[2] - 1)
@@ -60,10 +60,8 @@ def possible_moves(amphipod, configuration):
         # collect possible destinations, calculate required energy and return
         destinations = []
         for location in range(maxleft, minright + 1):
-            if location not in junctions.values():
-                steps = (
-                    abs(location - junctions[amphipod[1]]) + 1 + amphipod[2]
-                )
+            if location not in forks.values():
+                steps = abs(location - forks[amphipod[1]]) + 1 + amphipod[2]
                 destinations.append(
                     ("hallway", location, steps * energies[amphipod[0]])
                 )
@@ -79,24 +77,23 @@ start_configuration = []
 for i, kind in enumerate(burrow[1]):  # parse hallway
     if kind in ["A", "B", "C", "D"]:
         start_configuration.append((kind, "hallway", i - 1))
-for room, j in junctions.items():  # parse rooms
+for room, j in forks.items():  # parse rooms
     for i in range(2):
         if (kind := burrow[2 + i][1 + j]) in ["A", "B", "C", "D"]:
             start_configuration.append((kind, room, i))
 start_configuration = tuple(start_configuration)
 
 # initialization for Dijkstra-like algorithm to find lowest energy
-total_energy = {start_configuration: 0}
-to_visit = set([start_configuration])
+to_visit = {start_configuration: 0}  # configuration: total energy to get there
 
 # visit configuration with lowest total energy to get there
 while True:
     lowest_energy = float("inf")
-    for configuration in to_visit:
-        if total_energy[configuration] < lowest_energy:
-            lowest_energy = total_energy[configuration]
+    for configuration, energy in to_visit.items():
+        if energy < lowest_energy:
+            lowest_energy = energy
             lowest_energy_configuration = configuration
-    to_visit.remove(lowest_energy_configuration)
+    del to_visit[lowest_energy_configuration]
     print(lowest_energy, end="\r")
 
     # quit if configuration equals desired configuration
@@ -109,9 +106,8 @@ while True:
 
     # get neighbor configurations and energies to get there
     for amphipod in lowest_energy_configuration:
-        for destination in possible_moves(
-            amphipod, lowest_energy_configuration
-        ):
+        moves = possible_moves(amphipod, lowest_energy_configuration)
+        for destination in moves:
 
             # construct neighbor configuration and calculate the total energy
             new_configuration = tuple(
@@ -122,13 +118,9 @@ while True:
             )
             new_configuration_energy = lowest_energy + destination[2]
 
-            # if neighbor configuration not considered yet, add it to to_visit
-            if new_configuration not in total_energy:
-                to_visit.add(new_configuration)
-
-            # update energy for neighbor configuration if smaller than before
+            # add neighbor if new or energy to get there this way is lower
             if (
-                new_configuration not in total_energy
-                or new_configuration_energy < total_energy[new_configuration]
+                new_configuration not in to_visit
+                or new_configuration_energy < to_visit[new_configuration]
             ):
-                total_energy[new_configuration] = new_configuration_energy
+                to_visit[new_configuration] = new_configuration_energy
